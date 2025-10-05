@@ -1,0 +1,499 @@
+{
+  "name": "Ultimate_Personal_Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=# Overview\nYou are the ultimate personal assistant. Your job is to send the user's query to the correct tool. You should never be writing emails, or creating even summaries, you just need to call the correct tool.\n\n## Tools\n- Think: Use this to think deeply or if you get stuck\n- emailAgent: Use this tool to take action in email\n- calendarAgent: Use this tool to take action in calendar\n- contactAgent: Use this tool to get, update, or add contacts\n- contentCreator: Use this tool to create blog posts\n- Tavily: Use this tool to search the web\n\n## Rules\n- Some actions require you to look up contact information first. For the following actions, you must get contact information and send that to the agent who needs it:\n  - sending emails\n  - drafting emails\n  - creating calendar event with attendee\n\n## Instructions\n1) Call the neccessary tools based on the user request\n2) Use the \"Think\" tool to verify you took the right steps. This tool should be called every time.\n\n\n## Examples\n1) \n- Input: send an email to nate herkelman asking him what time he wants to leave\n  - Action: Use contactAgent to get nate herkelman's email\n  - Action: Use emailAgent to send the email. You will pass the tool a query like \"send nate herkelman an email to ask what time he wants to leave. here is his email: [email address]\n- Output: The email has been sent to Nate Herkelman. Anything else I can help you with?\n\n\n## Final Reminders\nHere is the current date/time: {{ $now }}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1888,
+        224
+      ],
+      "id": "d62fa556-6221-48f7-b687-031e962c88b3",
+      "name": "Ultimate Assistant"
+    },
+    {
+      "parameters": {
+        "name": "emailAgent",
+        "description": "Call this tool for any email actions.",
+        "workflowId": {
+          "__rl": true,
+          "value": "7MnZmFYRuAkpEWxO",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/7MnZmFYRuAkpEWxO",
+          "cachedResultName": "🤖Email Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        768
+      ],
+      "id": "e0f966ae-0399-4222-aa61-95870791ed90",
+      "name": "Email Agent"
+    },
+    {
+      "parameters": {
+        "name": "contactAgent",
+        "description": "Call this tool for any contact related actions.",
+        "workflowId": {
+          "__rl": true,
+          "value": "3TLOoq0iZjMFOiEP",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/3TLOoq0iZjMFOiEP",
+          "cachedResultName": "🤖Contact Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        2064,
+        768
+      ],
+      "id": "1e8ab11e-55ed-4fb5-b45f-84cde37b5440",
+      "name": "Contact Agent"
+    },
+    {
+      "parameters": {
+        "name": "contentCreator",
+        "description": "Call this tool to create blog posts.",
+        "workflowId": {
+          "__rl": true,
+          "value": "wrBa7yMKkVTpYaYo",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/wrBa7yMKkVTpYaYo",
+          "cachedResultName": "🤖Content Creator Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        2208,
+        768
+      ],
+      "id": "45d9c556-5425-4c00-9491-e7337b348d81",
+      "name": "Content Creator Agent"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this tool to search the internet",
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n    \"api_key\": \"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\",\n    \"query\": \"{searchTerm}\",\n    \"search_depth\": \"basic\",\n    \"include_answer\": true,\n    \"topic\": \"news\",\n    \"include_raw_content\": true,\n    \"max_results\": 3\n} ",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "searchTerm",
+              "description": "What the user has requested to search the internet for",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        2432,
+        512
+      ],
+      "id": "190ec793-2936-41ce-b0ce-792f3d44b91c",
+      "name": "Tavily"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        2560,
+        512
+      ],
+      "id": "f7eb9d49-7b21-40e5-9073-dc4616602cad",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "name": "calendarAgent",
+        "description": "Call this tool for any calendar action.",
+        "workflowId": {
+          "__rl": true,
+          "value": "iysNbqf6qVPq8CV8",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/iysNbqf6qVPq8CV8",
+          "cachedResultName": "Ultimate Personal Assistant"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        768
+      ],
+      "id": "c942c7ed-bf8f-4c69-aa25-ff898fff9f61",
+      "name": "Calendar Agent"
+    },
+    {
+      "parameters": {
+        "content": "# Parent Agent\n\n",
+        "height": 260,
+        "width": 420,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1808,
+        128
+      ],
+      "typeVersion": 1,
+      "id": "1b0a2be1-9b8d-48aa-a80c-d96335ec9399",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Children\n## Sub-Workflows\n",
+        "height": 200,
+        "width": 800,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1552,
+        720
+      ],
+      "typeVersion": 1,
+      "id": "538b68ca-4d9e-408a-856e-c6e56951c92d",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        2448,
+        800
+      ],
+      "id": "3bb3d0f8-5034-44ca-b28c-d276c2064848",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "content": "# Think\n",
+        "height": 200,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        720
+      ],
+      "id": "a9dabdc6-05e1-41cd-a8cd-48d6aef8f775",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "a18d1e17-d739-442a-b0d0-6d764a21fa4e",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        1088,
+        224
+      ],
+      "webhookId": "99eab1a0-569d-4f0f-a49e-578a02abfe63",
+      "credentials": {
+        "telegramApi": {
+          "id": "ygE3tyjRymYGKT4P",
+          "name": "Personal Assistant"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fe7ecc99-e1e8-4a5e-bdd6-6fce9757b234",
+              "name": "text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7aa772f2-4c7d-4793-b687-2bb1a8e1209b",
+      "name": "Set 'Text'",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1472,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "7dd3b59e-b0af-4e03-a54a-05b6b4f98d38",
+      "name": "Response",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2304,
+        224
+      ],
+      "webhookId": "682ca5ab-d30c-4ea5-bb25-c2f26206e761",
+      "credentials": {
+        "telegramApi": {
+          "id": "ygE3tyjRymYGKT4P",
+          "name": "Personal Assistant"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1744,
+        528
+      ],
+      "id": "936b45aa-a313-4686-aee4-513f104e9499",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        528
+      ],
+      "id": "893437b9-ad23-4604-9303-361eddbcf893",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "Qpj3nmiCbTAzpbDx",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# 🛠️ Setup Guide  \n**Author:** [Shubham rathod](https://github.com/Rathodshubham07)\n\nFollow the steps below to set up your Ultimate Assistant with its supporting agents:\n\n### ✅ Step 1: Download the JSON Files  \nGet the [workflow JSON files](https://github.com/Rathodshubham07/n8n---Ultimate_Personal_Assistant) for the following agents:  \n- **Email Agent**  \n- **Calendar Agent**  \n- **Contact Agent**  \n- **Content Creator Agent**  \n\nMake sure you have all four ready to import.\n\n### ✅ Step 2: Import & Link the Workflows  \nImport each JSON file into n8n as a separate workflow.  \nOnce imported, connect each agent to the main assistant workflow using the appropriate tool node. This ensures seamless delegation and response routing.\n\n### ✅ Step 3: Connect a Chat Model to Each Agent  \nFor full functionality, attach a chat model to each of the agents:  \n- One for the **main assistant**  \n- One each for the **email**, **calendar**, **contact**, and **content** agents  \n\nYou can use models from OpenRouter, Anthropic, or any other supported provider.\n\n### ✅ Step 4: Add Required Credentials  \nLink the necessary credentials to each agent’s flow:  \n- **Gmail** (Email Agent)  \n- **Google Calendar** (Calendar Agent)  \n- **Airtable** (Contact Agent)  \n- **Tavily** (Ultimate Assistant & Content Creator Agent)  \n\n### ✅ Step 5: Connect Telegram  \nIntegrate your **Telegram account** so you can interact with the assistant and receive messages in real time.  \n\n### 💡 You're All Set  \nOnce everything is connected, start chatting with your assistant and let it manage your tasks across email, calendar, contacts, and content!\n",
+        "height": 940,
+        "width": 1000
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "88f0ac6c-f7c6-43d5-9704-725730540f98",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Email Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contact Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Creator Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tavily": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set 'Text'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set 'Text'": {
+      "main": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ultimate Assistant": {
+      "main": [
+        [
+          {
+            "node": "Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "683b5398-1ebd-4dd9-90dc-20f19d136242",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9aa95ce6c13089676c055136c8fa3c2c0cf2211a2e9b1f3b843a2cc8cfda0b81"
+  },
+  "id": "iysNbqf6qVPq8CV8",
+  "tags": []
+}
